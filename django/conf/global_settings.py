@@ -130,6 +130,9 @@ DEFAULT_CHARSET = 'utf-8'
 # Encoding of files read from disk (template and initial SQL files).
 FILE_CHARSET = 'utf-8'
 
+#App host
+CURRENT_URL = 'http://localhost:8000'
+
 # E-mail address that error messages come from.
 SERVER_EMAIL = 'root@localhost'
 

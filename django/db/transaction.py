@@ -22,6 +22,9 @@ except ImportError:
     from django.utils.functional import wraps  # Python 2.4 fallback.
 from django.db import connections, DEFAULT_DB_ALIAS
 from django.conf import settings
+import logging
+logger = logging.getLogger(__name__)
+
 
 class TransactionManagementError(Exception):
     """
@@ -299,6 +302,7 @@ def commit_on_success(using=None):
                     res = func(*args, **kw)
                 except:
                     # All exceptions must be handled here (even string ones).
+                    logger.exception('Unable to commit on success')
                     if is_dirty(using=db):
                         rollback(using=db)
                     raise

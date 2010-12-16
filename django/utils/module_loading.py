@@ -8,9 +8,16 @@ def module_has_submodule(package, module_name):
     name = ".".join([package.__name__, module_name])
     if name in sys.modules:
         return True
+
     for finder in sys.meta_path:
-        if finder.find_module(name):
-            return True
+        # pyamf has has a non-standard 'find_module', so ignore this shit.
+        # For find_module definition see: http://www.python.org/dev/peps/pep-0302/ 
+        try:
+            if finder.find_module(name):
+                return True
+        except:
+            continue
+            
     for entry in package.__path__:  # No __path__, then not a package.
         try:
             # Try the cached finder.

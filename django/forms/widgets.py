@@ -444,7 +444,7 @@ class Select(Widget):
             selected_html = (option_value in selected_choices) and u' selected="selected"' or ''
             return u'<option value="%s"%s>%s</option>' % (
                 escape(option_value), selected_html,
-                conditional_escape(force_unicode(option_label)))
+                conditional_escape(force_unicode(option_label)[:200]))
         # Normalize to strings.
         selected_choices = set([force_unicode(v) for v in selected_choices])
         output = []

@@ -55,15 +55,6 @@ def staff_member_required(view_func):
         user = authenticate(username=username, password=password)
         if user is None:
             message = ERROR_MESSAGE
-            if '@' in username:
-                # Mistakenly entered e-mail address instead of username? Look it up.
-                users = list(User.objects.filter(email=username))
-                if len(users) == 1 and users[0].check_password(password):
-                    message = _("Your e-mail address is not your username. Try '%s' instead.") % users[0].username
-                else:
-                    # Either we cannot find the user, or if more than 1
-                    # we cannot guess which user is the correct one.
-                    message = _("Usernames cannot contain the '@' character.")
             return _display_login_form(request, message)
 
         # The user data is correct; log in the user in and continue.

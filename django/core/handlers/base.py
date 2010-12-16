@@ -1,9 +1,11 @@
-import sys
-
 from django import http
 from django.core import signals
 from django.utils.encoding import force_unicode
 from django.utils.importlib import import_module
+import logging
+import sys
+
+logger = logging.getLogger(__name__)
 
 class BaseHandler(object):
     # Changes that are always applied to a response (in this order).
@@ -171,7 +173,8 @@ class BaseHandler(object):
             request_repr = repr(request)
         except:
             request_repr = "Request repr() unavailable"
-        message = "%s\n\n%s" % (self._get_traceback(exc_info), request_repr)
+        message = "User: %s\n\n%s\n\n%s" % (request.user, self._get_traceback(exc_info), request_repr)
+        logger.fatal(message)
         mail_admins(subject, message, fail_silently=True)
         # If Http500 handler is not installed, re-raise last exception
         if resolver.urlconf_module is None:
