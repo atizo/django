@@ -4,6 +4,7 @@ Form Widget classes specific to the Django admin site.
 
 import copy
 from django import forms
+from django.conf import settings
 from django.contrib.admin.templatetags.admin_static import static
 from django.core.urlresolvers import reverse
 from django.forms.widgets import RadioFieldRenderer
@@ -265,6 +266,9 @@ class RelatedFieldWidgetWrapper(forms.Widget):
                           % (related_url, name))
             output.append(u'<img src="%s" width="10" height="10" alt="%s"/></a>'
                           % (static('admin/img/icon_addlink.gif'), _('Add Another')))
+            if value != None:
+                output.append(u'<a href="%s%s" title="Go to selected model"><img src="%simg/admin/selector-addall.gif" width="16" height="16" alt="Go to selected model"/></a>' % \
+                    ('/%s/%s/%s/' % (settings.ADMIN_URL, info[0], info[1]), value, settings.ADMIN_MEDIA_PREFIX))
         return mark_safe(u''.join(output))
 
     def build_attrs(self, extra_attrs=None, **kwargs):
