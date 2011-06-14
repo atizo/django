@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import copy
 
 from django import forms
+from django.conf import settings
 from django.contrib.admin.templatetags.admin_static import static
 from django.core.urlresolvers import reverse
 from django.forms.widgets import RadioFieldRenderer
@@ -269,7 +270,10 @@ class RelatedFieldWidgetWrapper(forms.Widget):
                           % (related_url, name))
             output.append('<img src="%s" width="10" height="10" alt="%s"/></a>'
                           % (static('admin/img/icon_addlink.gif'), _('Add Another')))
-        return mark_safe(''.join(output))
+            if value != None:
+                output.append(u'<a href="%s%s" title="Go to selected model"><img src="%simg/admin/selector-addall.gif" width="16" height="16" alt="Go to selected model"/></a>' % \
+                    ('/%s/%s/%s/admin/' % (settings.ADMIN_URL, info[0], info[1]), value, settings.STATIC_URL))
+        return mark_safe(u''.join(output))
 
     def build_attrs(self, extra_attrs=None, **kwargs):
         "Helper function for building an attribute dictionary."
