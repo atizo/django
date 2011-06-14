@@ -244,6 +244,9 @@ class RelatedFieldWidgetWrapper(forms.Widget):
             output.append(u'<a href="%s" class="add-another" id="add_id_%s" onclick="return showAddAnotherPopup(this);"> ' % \
                 (related_url, name))
             output.append(u'<img src="%simg/admin/icon_addlink.gif" width="10" height="10" alt="%s"/></a>' % (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
+            if value != None:
+                output.append(u'<a href="%s%s" title="Go to selected model"><img src="%simg/admin/selector-addall.gif" width="16" height="16" alt="Go to selected model"/></a>' % \
+                    ('/%s/%s/%s/' % (settings.ADMIN_URL, info[0], info[1]), value, settings.ADMIN_MEDIA_PREFIX))
         return mark_safe(u''.join(output))
 
     def build_attrs(self, extra_attrs=None, **kwargs):
