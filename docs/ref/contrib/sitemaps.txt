@@ -208,6 +208,11 @@ Sitemap class reference
 
         .. _sitemaps.org documentation: http://www.sitemaps.org/protocol.html#prioritydef
 
+    .. attribute:: Sitemap.protocol
+
+        **Optional.** A string containing the protocol to be used in the URL of each
+        item in the sitemap. The default is 'http'; if your site is all HTTPS, set it to 'https'.
+
 Shortcuts
 =========
 
@@ -369,3 +374,14 @@ Once the sitemaps application is added to your project, you may also
 ping Google using the ``ping_google`` management command::
 
     python manage.py ping_google [/sitemap.xml]
+
+New in Django development version
+---------------------------------
+
+Support for pinging other search engines is now available. There is a
+new function, :func:`ping_search_engines`, that can be used just like 
+:func:`ping_google`. It notifies Ask and Live Search in addition to 
+Google. There is a corresponding manage.py command, which again 
+works just like ping_google:
+
+    python manage.py ping_search_engines [/sitemap.xml]
