@@ -2,7 +2,7 @@ import logging
 import urllib
 
 from django.conf import settings
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import Site, get_current_site
 from django.core import urlresolvers, paginator
 
 class SitemapNotFound(Exception):
@@ -103,17 +103,25 @@ class Sitemap(object):
         return self._paginator
     paginator = property(_get_paginator)
 
-    def get_urls(self, page=1):
-        from django.contrib.sites.models import Site
-        current_site = Site.objects.get_current()
+    def get_urls(self, page=1, site=None):
+        if site is None:
+            if Site._meta.installed:
+                try:
+                    site = Site.objects.get_current()
+                except Site.DoesNotExist:
+                    pass
+            if site is None:
+                raise ImproperlyConfigured("In order to use Sitemaps you must either use the sites framework or pass in a Site or RequestSite object in your view code.")
+
         urls = []
         for item in self.paginator.page(page).object_list:
-            loc = "%s://%s%s" % (self.protocol, current_site.domain, self.__get('location', item))
+            loc = "http://%s%s" % (site.domain, self.__get('location', item))
+            priority = self.__get('priority', item, None)
             url_info = {
-                'location':   loc,
-                'lastmod':    self.__get('lastmod', item, None),
+                'location': loc,
+                'lastmod': self.__get('lastmod', item, None),
                 'changefreq': self.__get('changefreq', item, None),
-                'priority':   self.__get('priority', item, None)
+                'priority': str(priority is not None and priority or '')
             }
             urls.append(url_info)
         return urls
