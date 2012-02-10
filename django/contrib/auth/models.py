@@ -11,6 +11,7 @@ from django.utils.encoding import smart_str
 from django.utils.hashcompat import md5_constructor, sha_constructor
 from django.utils.translation import ugettext_lazy as _
 from django.utils.crypto import constant_time_compare
+import caching.base
 
 
 UNUSABLE_PASSWORD = '!' # This will never be a valid hash
@@ -54,14 +55,14 @@ user_logged_in.connect(update_last_login)
 class SiteProfileNotAvailable(Exception):
     pass
 
-class PermissionManager(models.Manager):
+class PermissionManager(caching.base.CachingManager, models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
         return self.get(
             codename=codename,
             content_type=ContentType.objects.get_by_natural_key(app_label, model)
         )
 
-class Permission(models.Model):
+class Permission(caching.base.CachingMixin, models.Model):
     """The permissions system provides a way to assign permissions to specific users and groups of users.
 
     The permission system is used by the Django admin site, but may also be useful in your own code. The Django admin site uses permissions as follows:
@@ -95,7 +96,7 @@ class Permission(models.Model):
         return (self.codename,) + self.content_type.natural_key()
     natural_key.dependencies = ['contenttypes.contenttype']
 
-class Group(models.Model):
+class Group(caching.base.CachingMixin, models.Model):
     """Groups are a generic way of categorizing users to apply permissions, or some other label, to those users. A user can belong to any number of groups.
 
     A user in a group automatically has all the permissions granted to that group. For example, if the group Site editors has the permission can_edit_home_page, any user in that group will have that permission.
@@ -105,6 +106,8 @@ class Group(models.Model):
     name = models.CharField(_('name'), max_length=80, unique=True)
     permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'), blank=True)
 
+    objects = caching.base.CachingManager()
+
     class Meta:
         verbose_name = _('group')
         verbose_name_plural = _('groups')
@@ -112,7 +115,7 @@ class Group(models.Model):
     def __unicode__(self):
         return self.name
 
-class UserManager(models.Manager):
+class UserManager(caching.base.CachingManager, models.Manager):
     def create_user(self, username, email, password=None):
         """
         Creates and saves a User with the given username, e-mail and password.
@@ -198,7 +201,7 @@ def _user_has_module_perms(user, app_label):
     return False
 
 
-class User(models.Model):
+class User(caching.base.CachingMixin, models.Model):
     """
     Users within the Django authentication system are represented by this model.
 
@@ -394,7 +397,7 @@ class User(models.Model):
         return self._message_set
     message_set = property(_get_message_set)
 
-class Message(models.Model):
+class Message(caching.base.CachingMixin, models.Model):
     """
     The message system is a lightweight way to queue messages for given
     users. A message is associated with a User instance (so it is only
@@ -405,6 +408,8 @@ class Message(models.Model):
     """
     user = models.ForeignKey(User, related_name='_message_set')
     message = models.TextField(_('message'))
+
+    objects = caching.base.CachingManager()
 
     def __unicode__(self):
         return self.message
