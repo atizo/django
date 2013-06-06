@@ -229,12 +229,12 @@ class User(models.Model):
 
     Username and password are required. Other fields are optional.
     """
-    username = models.CharField(_('username'), max_length=30, unique=True,
-        help_text=_('Required. 30 characters or fewer. Letters, numbers and '
+    username = models.EmailField(_('username'), max_length=255, unique=True,
+        help_text=_('Required. 255 characters or fewer. Letters, numbers and '
                     '@/./+/-/_ characters'))
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    email = models.EmailField(_('e-mail address'), blank=True)
+    email = models.EmailField(_('e-mail address'), max_length=255, unique=True)
     password = models.CharField(_('password'), max_length=128)
     is_staff = models.BooleanField(_('staff status'), default=False,
         help_text=_('Designates whether the user can log into this admin '
