@@ -267,8 +267,11 @@ class RelatedFieldWidgetWrapper(forms.Widget):
             output.append(u'<img src="%s" width="10" height="10" alt="%s"/></a>'
                           % (static('admin/img/icon_addlink.gif'), _('Add Another')))
             if value != None:
-                output.append(u'<a href="%s%s" title="Go to selected model"><img src="%simg/admin/selector-addall.gif" width="16" height="16" alt="Go to selected model"/></a>' % \
-                    ('/%s/%s/%s/' % (settings.ADMIN_URL, info[0], info[1]), value, settings.ADMIN_MEDIA_PREFIX))
+                output.append(u'<a class="selector-chooseall active" href="%s" '
+                              u'title="Go to selected model">'
+                              u'<span class="icon">&nbsp;</span></a>' % \
+                                ('/%s/%s/%s/%s' % (settings.ADMIN_URL,
+                                                   info[0], info[1], value)))
         return mark_safe(u''.join(output))
 
     def build_attrs(self, extra_attrs=None, **kwargs):
